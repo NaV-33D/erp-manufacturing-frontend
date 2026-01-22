@@ -12,8 +12,7 @@ import {
   User,
   Settings,
   LogOut,
-  Bell,
-  Search,
+  UserCircle,
   HelpCircle,
 } from "lucide-react";
 
@@ -27,19 +26,16 @@ const navLinks = [
     name: "Products",
     path: "/products",
     icon: <Package size={20} />,
-    badge: 12,
   },
   {
     name: "Orders",
     path: "/orders",
     icon: <ShoppingCart size={20} />,
-    badge: 5,
   },
   {
     name: "Analytics",
     path: "/reports",
     icon: <BarChart3 size={20} />,
-    badge: "New",
   },
   {
     name: "Customers",
@@ -57,7 +53,7 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -77,10 +73,29 @@ const Sidebar = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Filter nav links based on search
-  const filteredLinks = navLinks.filter((link) =>
-    link.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfileMenu && !event.target.closest(".profile-menu-container")) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showProfileMenu]);
+
+  const handleLogout = () => {
+    // Add your logout logic here
+    console.log("Logging out...");
+    setShowProfileMenu(false);
+  };
+
+  const handleProfile = () => {
+    navigate("/profile");
+    setShowProfileMenu(false);
+    if (isMobile) setIsOpen(false);
+  };
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -130,29 +145,10 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* Search Bar (only when not collapsed) */}
-        {/* {!collapsed && (
-          <div className="px-4 py-3 border-b">
-            <div className="relative">
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={18}
-              />
-              <input
-                type="text"
-                placeholder="Search menu..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-        )} */}
-
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto py-3 px-2">
           <div className="space-y-1">
-            {filteredLinks.map((link) => {
+            {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
                 <button
@@ -176,69 +172,124 @@ const Sidebar = () => {
                   </div>
 
                   {!collapsed && (
-                    <>
-                      <span className="flex-1 text-left">{link.name}</span>
-                      {link.badge && (
-                        <span
-                          className={`px-2 py-0.5 text-xs rounded-full
-                          ${
-                            typeof link.badge === "number"
-                              ? "bg-blue-100 text-blue-600"
-                              : "bg-green-100 text-green-600"
-                          }`}
-                        >
-                          {link.badge}
-                        </span>
-                      )}
-                    </>
-                  )}
-
-                  {collapsed && link.badge && (
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span className="flex-1 text-left">{link.name}</span>
                   )}
                 </button>
               );
             })}
           </div>
 
-          {/* Divider */}
+          {/* Quick Actions Section */}
           {!collapsed && (
-            <div className="px-4 py-3">
+            <div className="mt-6 px-4 py-3 border-t">
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                 Quick Actions
               </div>
-              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">
-                <HelpCircle size={18} />
-                <span>Help & Support</span>
-              </button>
+              <div className="space-y-1">
+                <button
+                  onClick={() => navigate("/help")}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <HelpCircle size={18} className="text-gray-500" />
+                  <span>Help & Support</span>
+                </button>
+                <button
+                  onClick={() => navigate("/documentation")}
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <span>Documentation</span>
+                </button>
+              </div>
             </div>
           )}
         </nav>
 
-        {/* User Profile Section */}
+        {/* User Profile Section in Sidebar (for collapsed view) */}
         <div className={`border-t p-4 ${collapsed ? "px-2" : "px-4"}`}>
           <div
             className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-semibold">AJ</span>
-            </div>
-
-            {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm text-gray-900 truncate">
-                  Admin User
-                </div>
-                <div className="text-xs text-gray-500 truncate">
-                  admin@erp.com
-                </div>
+            <button
+              onClick={() => collapsed && setShowProfileMenu(!showProfileMenu)}
+              className="relative"
+            >
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center hover:opacity-90 transition-opacity">
+                <span className="text-white text-sm font-semibold">AJ</span>
               </div>
-            )}
+            </button>
 
             {!collapsed && (
-              <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
-                <LogOut size={18} className="text-gray-500" />
-              </button>
+              <>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-sm text-gray-900 truncate">
+                    Admin User
+                  </div>
+                  <div className="text-xs text-gray-500 truncate">
+                    admin@erp.com
+                  </div>
+                </div>
+                <div className="relative profile-menu-container">
+                  <button
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <svg
+                      className="w-4 h-4 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Profile Dropdown Menu */}
+                  {showProfileMenu && (
+                    <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                      <button
+                        onClick={handleProfile}
+                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        <UserCircle size={16} />
+                        <span>My Profile</span>
+                      </button>
+                      <button
+                        onClick={() => navigate("/settings")}
+                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        <Settings size={16} />
+                        <span>Account Settings</span>
+                      </button>
+                      <div className="border-t my-1"></div>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <LogOut size={16} />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -285,31 +336,71 @@ const Sidebar = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <button className="relative p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <Bell size={20} className="text-gray-600" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
-
-              <div className="w-px h-6 bg-gray-300"></div>
-
-              <button className="flex items-center gap-3 p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-semibold">AJ</span>
-                </div>
-                <div className="hidden md:block">
-                  <div className="font-medium text-sm text-gray-900">
-                    Admin User
+              {/* Desktop Profile Menu */}
+              <div className="relative profile-menu-container">
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="flex items-center gap-3 p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-semibold">AJ</span>
                   </div>
-                  <div className="text-xs text-gray-500">Administrator</div>
-                </div>
-              </button>
+                  <div className="hidden md:block text-left">
+                    <div className="font-medium text-sm text-gray-900">
+                      Admin User
+                    </div>
+                    <div className="text-xs text-gray-500">Administrator</div>
+                  </div>
+                  <svg
+                    className="w-4 h-4 text-gray-500 hidden md:block"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* Profile Dropdown Menu */}
+                {showProfileMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                    <button
+                      onClick={handleProfile}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                      <UserCircle size={16} />
+                      <span>My Profile</span>
+                    </button>
+                    <button
+                      onClick={() => navigate("/settings")}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                      <Settings size={16} />
+                      <span>Account Settings</span>
+                    </button>
+                    <div className="border-t my-1"></div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut size={16} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-5 bg-gray-50">
-          <div className=" mx-auto">
+          <div className="mx-auto">
             <Outlet />
           </div>
         </main>
