@@ -328,7 +328,7 @@ const Sidebar = () => {
               )} */}
 
               <div>
-                <h1 className="font-bold text-lg text-gray-900">
+                <h1 className="font-bold text-md text-gray-900">
                   Dashboard Overview
                 </h1>
                 <p className="text-sm text-gray-500">Welcome back, Admin</p>
