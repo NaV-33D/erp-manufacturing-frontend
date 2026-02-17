@@ -242,7 +242,7 @@ const Sidebar = () => {
                   </div>
                 </div>
                 <div className="relative profile-menu-container">
-                  <button
+                  {/* <button
                     onClick={() => setShowProfileMenu(!showProfileMenu)}
                     className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
                   >
@@ -259,10 +259,10 @@ const Sidebar = () => {
                         d="M19 9l-7 7-7-7"
                       />
                     </svg>
-                  </button>
+                  </button> */}
 
                   {/* Profile Dropdown Menu */}
-                  {showProfileMenu && (
+                  {/* {showProfileMenu && (
                     <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
                       <button
                         onClick={handleProfile}
@@ -287,7 +287,7 @@ const Sidebar = () => {
                         <span>Logout</span>
                       </button>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </>
             )}
@@ -318,14 +318,14 @@ const Sidebar = () => {
                 {isOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
 
-              {!isMobile && collapsed && (
+              {/* {!isMobile && collapsed && (
                 <button
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                   onClick={() => setCollapsed(false)}
                 >
                   <ChevronRight size={20} />
                 </button>
-              )}
+              )} */}
 
               <div>
                 <h1 className="font-bold text-lg text-gray-900">
