@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./pages/Sidebar";
 import Dashboard from "./pages/dashboard/Dashboard";
 
@@ -10,15 +10,17 @@ import Dashboard from "./pages/dashboard/Dashboard";
 
 function App() {
   return (
-    <Routes>
-      {/* Layout Route */}
-      <Route path="/" element={<Sidebar />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        {/*<Route path="usermanagement" element={<UserManagement />} />
+    <Router>
+      <Routes>
+        {/* Layout Route */}
+        <Route path="/" element={<Sidebar />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          {/*<Route path="usermanagement" element={<UserManagement />} />
         <Route path="allproductlist" element={<ProductList />} />
         <Route path="payments" element={<Payments />} /> */}
-      </Route>
-    </Routes>
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
