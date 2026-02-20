@@ -1,26 +1,42 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Sidebar from "./pages/Sidebar";
-import Dashboard from "./pages/dashboard/Dashboard";
-
-// import your pages
-// import Dashboard from "./pages/Dashboard";
-// import UserManagement from "./pages/UserManagement";
-// import ProductList from "./pages/ProductList";
-// import Payments from "./pages/Payments";
+import NewRoutes from "./routes/NewRoutes";
+import Login from "./pages/onboarding/Login";
+import { ToastProvider } from "./components/toast/ToastProvider";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Layout Route */}
-        <Route path="/" element={<Sidebar />}>
-          <Route path="dashboard" element={<Dashboard />} />
-          {/*<Route path="usermanagement" element={<UserManagement />} />
-        <Route path="allproductlist" element={<ProductList />} />
-        <Route path="payments" element={<Payments />} /> */}
-        </Route>
-      </Routes>
-    </Router>
+    <ToastProvider>
+      <Router>
+        <Routes>
+          {/* Public */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+          {/* Layout */}
+          <Route element={<Sidebar />}>
+            {NewRoutes.map(({ path, element, children }) => (
+              <Route key={path} path={path} element={element}>
+                {children?.map((c, idx) => (
+                  <Route
+                    key={idx}
+                    index={c.index}
+                    path={c.path}
+                    element={c.element}
+                  />
+                ))}
+              </Route>
+            ))}
+          </Route>
+        </Routes>
+      </Router>
+    </ToastProvider>
   );
 }
 
